@@ -7,12 +7,16 @@ const server = http.createServer(app);
 
 // mount socket.io to http server
 const io = new Server(server, {
-  cors: { origin: "http://localhost:5173" },
+  cors: {
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
+  },
 });
 
 // Mount socket handlers on connection
 io.on("connection", (socket) => {
   console.log("user is connected");
+
+  // Launch Game
 
   socket.on("disconnect", () => {
     console.log("user disconnected");
