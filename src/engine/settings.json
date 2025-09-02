@@ -13,5 +13,6 @@
   "tower-radius": 50,
   "fortress-hitpoints": 500,
   "steering-force": 0.1,
-  "avoidance-force": 0.3
+  "avoidance-force": 0.3,
+  "client-update-interval": 100
 }

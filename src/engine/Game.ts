@@ -5,7 +5,7 @@ import settings from "./settings.json";
 import Fortress from "./classes/Fortress";
 import GameObject from "./classes/GameObject";
 import spawnMinions from "./functions/spawnMinions";
-import { io } from "..";
+import { formatAndBroadcastGameState } from "../handlers/emitters";
 
 export type TeamObject = {
   [id: number]: GameObject;
@@ -28,6 +28,8 @@ export default class Game {
   tickRate: number = settings["fps"];
   tickInterval: number = 1000 / this.tickRate;
   tickFrame: NodeJS.Timeout | undefined = undefined;
+  currFame: number = 0;
+  prevEmittedFrame: number = 0;
 
   constructor(id: number) {
     this.id = id;
@@ -128,21 +130,24 @@ export default class Game {
       }
 
       this.update(gameTime);
+      this.currFame++;
 
       // Broadcast state to clients
-      // console.log("blueTeam: ", this.blueTeam);
-      // console.log("redTeam: ", this.redTeam);
-      // console.log(gameTime, start);
+      if (
+        currTime - this.prevEmittedFrame >
+        settings["client-update-interval"]
+      ) {
+        const state = {
+          id: this.id,
+          blueTeam: this.blueTeam,
+          redTeam: this.redTeam,
+          gameTime,
+          frame: this.currFame,
+        };
 
-      const state = {
-        id: this.id,
-        blueTeam: this.blueTeam,
-        redTeam: this.redTeam,
-        gameTime,
-        fram: this.tickFrame,
-      };
-
-      io.volatile.emit("update", state);
+        formatAndBroadcastGameState(state);
+        this.prevEmittedFrame = currTime;
+      }
     }, this.tickInterval);
   };
 }

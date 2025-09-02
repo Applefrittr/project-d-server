@@ -9,15 +9,11 @@ import vectorIntersectsObject from "../utils/vectorIntersectsObject";
 import { TeamObject } from "../Game";
 
 export default class Minion extends GameObject {
-  team: string | null = null;
   argoRange = 500;
   lookAhead = new Vector(0, 0);
   lookAhead2x = new Vector(0, 0);
   radius = settings["minion-radius"];
   prevAttackTime: number = 0;
-  visionConeWidth: number = Math.PI / 4;
-  visConeRight: number = 0;
-  visConeLeft: number = 0;
   immediateCollisionThreat: GameObject | null = null;
 
   // assigns Minion to a team and positions Vectors on canvas -> function is invoked when spawnWave is called during main Game loop
