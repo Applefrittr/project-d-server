@@ -84,14 +84,16 @@ export default class Game {
   }
 
   // main game loop -> loop is executed via requestAnimationFrame, checks game state, keeps track of game time, checks for win/lose conditions and calls render function
-  loop = (msNow: number) => {
+  loop = (start: number) => {
     this.tickFrame = setInterval(() => {
       // set intial start time of game loop
-      if (!this.startTime) this.startTime = msNow;
+      if (!this.startTime) this.startTime = start;
+
+      const currTime = performance.now();
 
       // Current in game time -> used for gamestate checks and rendering
       // Ensures game continues at a consistance pace, even when game is paused/resumed
-      const gameTime = msNow - this.startTime - this.pausedTime;
+      const gameTime = currTime - this.startTime - this.pausedTime;
 
       // toggle spawn wave switch on if time elasped between waves exceeds settings['time-between-waves]
       if (gameTime - this.prevWaveTime >= settings["time-between-waves"]) {
@@ -120,6 +122,7 @@ export default class Game {
       // Broadcast state to clients
       console.log("blueTeam: ", this.blueTeam);
       console.log("redTeam: ", this.redTeam);
+      console.log(gameTime, start);
     }, this.tickInterval);
   };
 }
