@@ -12,7 +12,7 @@ const server = http.createServer(app);
 let game: Game | null = null;
 
 // mount socket.io to http server
-const io = new Server(server, {
+export const io = new Server(server, {
   cors: {
     origin: process.env.CLIENT_URL || "http://localhost:5173",
   },

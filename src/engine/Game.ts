@@ -5,16 +5,22 @@ import settings from "./settings.json";
 import Fortress from "./classes/Fortress";
 import GameObject from "./classes/GameObject";
 import spawnMinions from "./functions/spawnMinions";
+import { io } from "..";
+
+export type TeamObject = {
+  [id: number]: GameObject;
+};
 
 export default class Game {
+  id: number = 0;
   fpsController = new FPSController();
   prevWaveTime: number = 0;
   prevMinionSpawn: number = 0;
   minionsSpawnedCurrWave: number = 0;
   minionPool: Minion[] = [];
   renderRate = 1000 / settings["fps"];
-  blueTeam: Set<GameObject> = new Set();
-  redTeam: Set<GameObject> = new Set();
+  blueTeam: TeamObject = {};
+  redTeam: TeamObject = {};
   isPaused: boolean = false;
   isWaveSpawning: boolean = true;
   startTime: number = 0;
@@ -23,10 +29,14 @@ export default class Game {
   tickInterval: number = 1000 / this.tickRate;
   tickFrame: NodeJS.Timeout | undefined = undefined;
 
+  constructor(id: number) {
+    this.id = id;
+  }
+
   // intialize creates intial gamestate and creates object pools
   initialize() {
-    this.blueTeam.add(new Fortress("blue"));
-    this.redTeam.add(new Fortress("red"));
+    this.blueTeam["-1"] = new Fortress("blue");
+    this.redTeam["-1"] = new Fortress("red");
     this.minionPool = initializeMinionPool(this.minionPool, 100);
 
     this.prevWaveTime = performance.now();
@@ -64,8 +74,8 @@ export default class Game {
   close() {
     clearInterval(this.tickFrame);
     this.minionPool = [];
-    this.redTeam = new Set();
-    this.blueTeam = new Set();
+    this.redTeam = {};
+    this.blueTeam = {};
   }
 
   pause() {
@@ -120,9 +130,19 @@ export default class Game {
       this.update(gameTime);
 
       // Broadcast state to clients
-      console.log("blueTeam: ", this.blueTeam);
-      console.log("redTeam: ", this.redTeam);
-      console.log(gameTime, start);
+      // console.log("blueTeam: ", this.blueTeam);
+      // console.log("redTeam: ", this.redTeam);
+      // console.log(gameTime, start);
+
+      const state = {
+        id: this.id,
+        blueTeam: this.blueTeam,
+        redTeam: this.redTeam,
+        gameTime,
+        fram: this.tickFrame,
+      };
+
+      io.volatile.emit("update", state);
     }, this.tickInterval);
   };
 }
