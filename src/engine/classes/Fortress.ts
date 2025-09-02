@@ -22,18 +22,4 @@ export default class Fortress extends GameObject {
       );
     }
   }
-
-  draw(ctx: CanvasRenderingContext2D) {
-    if (this.team) {
-      ctx.beginPath();
-      ctx.fillStyle = this.team;
-      ctx.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI);
-      ctx.fill();
-      ctx.closePath();
-
-      ctx.fillStyle = "black";
-      ctx.font = "16px serif";
-      ctx.fillText(this.hitPoints.toString(), this.position.x, this.position.y);
-    }
-  }
 }

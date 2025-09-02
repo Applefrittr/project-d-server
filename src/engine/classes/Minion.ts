@@ -146,44 +146,9 @@ export default class Minion extends GameObject {
     return;
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
-    if (typeof this.team === "string") {
-      // draw Minion body
-      ctx.beginPath();
-      ctx.fillStyle = this.team;
-      ctx.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI);
-      ctx.fill();
-      ctx.closePath();
-
-      // TEMP - Display hitpoints, ID, and Vector direction
-      ctx.fillStyle = "black";
-      ctx.font = "16px serif";
-      ctx.fillText(this.hitPoints.toString(), this.position.x, this.position.y);
-      ctx.fillText(
-        JSON.stringify(this.velocity),
-        this.position.x,
-        this.position.y + 16
-      );
-
-      ctx.beginPath();
-      ctx.strokeStyle = "black";
-      // ctx.moveTo(this.position.x, this.position.y);
-      // ctx.lineTo(this.lookAhead.x, this.lookAhead.y);
-      ctx.arc(this.lookAhead.x, this.lookAhead.y, 5, 0, 2 * Math.PI);
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.strokeStyle = "orange";
-      // ctx.moveTo(this.position.x, this.position.y);
-      // ctx.lineTo(this.lookAhead2x.x, this.lookAhead2x.y);
-      ctx.arc(this.lookAhead2x.x, this.lookAhead2x.y, 5, 0, 2 * Math.PI);
-      ctx.stroke();
-    }
-  }
-
-  update(ctx: CanvasRenderingContext2D | null) {
+  update() {
     // update direction vectors, position coordinates and draw to canvas
-    if (ctx && typeof this.team === "string" && this.target) {
+    if (typeof this.team === "string" && this.target) {
       // detect if Minion is colliding with it's target; if so, set directional vectors to 0, otherwise call vectorSteerToTarget(this)
       if (
         getDistanceBetweenVectors(this.position, this.target.position) <=
@@ -222,8 +187,6 @@ export default class Minion extends GameObject {
           this.position.y + this.velocity.y * settings["minion-look-ahead-max"]
         );
       }
-
-      this.draw(ctx);
     }
   }
 }
