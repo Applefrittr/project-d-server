@@ -1,4 +1,3 @@
-import FPSController from "./classes/FPSController";
 import Minion from "./classes/Minion";
 import initializeMinionPool from "./functions/intializeMinionPool";
 import settings from "./settings.json";
@@ -12,19 +11,19 @@ export type TeamObject = {
 };
 
 export default class Game {
-  id: number = 0;
-  fpsController = new FPSController();
   prevWaveTime: number = 0;
   prevMinionSpawn: number = 0;
   minionsSpawnedCurrWave: number = 0;
   minionPool: Minion[] = [];
-  renderRate = 1000 / settings["fps"];
   blueTeam: TeamObject = {};
   redTeam: TeamObject = {};
   isPaused: boolean = false;
   isWaveSpawning: boolean = true;
   startTime: number = 0;
   pausedTime: number = 0;
+
+  // Server specific properties
+  id: number = 0;
   tickRate: number = settings["fps"];
   tickInterval: number = 1000 / this.tickRate;
   tickFrame: NodeJS.Timeout | undefined = undefined;

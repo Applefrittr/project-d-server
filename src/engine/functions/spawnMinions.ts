@@ -1,4 +1,3 @@
-import type GameObject from "../classes/GameObject";
 import type Minion from "../classes/Minion";
 import settings from "../settings.json";
 import setVelocityVector from "../utils/setVelocityVector";
