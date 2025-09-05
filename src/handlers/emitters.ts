@@ -10,33 +10,36 @@ type GameState = {
   frame: number;
 };
 
-type JSONableGameObject = {
+type GameObjectData = {
   id: number;
   position: Vector;
   velocity: Vector;
-  hitpoints: number;
-  team: string | null;
+  hitPoints: number;
+  team: string;
+  radius: number;
 };
 
 export function formatAndBroadcastGameState(state: GameState) {
-  const gameObjects: JSONableGameObject[] = [];
+  const gameObjects: GameObjectData[] = [];
 
   for (const obj of Object.values(state.blueTeam)) {
-    const blueObj: JSONableGameObject = {
+    const blueObj: GameObjectData = {
       id: obj.id,
       position: obj.position,
       velocity: obj.velocity,
-      hitpoints: obj.hitPoints,
+      hitPoints: obj.hitPoints,
+      radius: obj.radius,
       team: obj.team,
     };
     gameObjects.push(blueObj);
   }
   for (const obj of Object.values(state.redTeam)) {
-    const redObj: JSONableGameObject = {
+    const redObj: GameObjectData = {
       id: obj.id,
       position: obj.position,
       velocity: obj.velocity,
-      hitpoints: obj.hitPoints,
+      hitPoints: obj.hitPoints,
+      radius: obj.radius,
       team: obj.team,
     };
     gameObjects.push(redObj);

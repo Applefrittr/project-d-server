@@ -2,7 +2,6 @@ import GameObject from "./GameObject";
 import settings from "../settings.json";
 
 export default class Fortress extends GameObject {
-  team: string | null = null;
   argoRange = 200;
 
   constructor(team: "red" | "blue") {

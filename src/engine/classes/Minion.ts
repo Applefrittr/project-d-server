@@ -138,14 +138,13 @@ export default class Minion extends GameObject {
   // reset Minion back to Game Minion pool once hitpoints reach zero
   destroy(team: TeamObject) {
     delete team[this.id];
-    this.team = null;
     super.reset();
     return;
   }
 
   update() {
     // update direction vectors, position coordinates and draw to canvas
-    if (typeof this.team === "string" && this.target) {
+    if (this.target) {
       // detect if Minion is colliding with it's target; if so, set directional vectors to 0, otherwise call vectorSteerToTarget(this)
       if (
         getDistanceBetweenVectors(this.position, this.target.position) <=

@@ -39,8 +39,6 @@ export default class Game {
     this.blueTeam["-1"] = new Fortress("blue");
     this.redTeam["-1"] = new Fortress("red");
     this.minionPool = initializeMinionPool(this.minionPool, 100);
-
-    this.prevWaveTime = performance.now();
   }
 
   // render function loops through all game assets (class instances) and calls their respective update()
@@ -77,6 +75,10 @@ export default class Game {
     this.minionPool = [];
     this.redTeam = {};
     this.blueTeam = {};
+    this.startTime = 0;
+    this.pausedTime = 0;
+    this.currFame = 0;
+    this.prevEmittedFrame = 0;
   }
 
   pause() {
@@ -105,6 +107,9 @@ export default class Game {
       // Current in game time -> used for gamestate checks and rendering
       // Ensures game continues at a consistance pace, even when game is paused/resumed
       const gameTime = currTime - this.startTime - this.pausedTime;
+
+      // Set initial time value for prevWaveSpawn -> used to calculate when to spawn Minion waves
+      if (!this.prevWaveTime) this.prevWaveTime = gameTime;
 
       // toggle spawn wave switch on if time elasped between waves exceeds settings['time-between-waves]
       if (gameTime - this.prevWaveTime >= settings["time-between-waves"]) {

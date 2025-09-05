@@ -8,7 +8,7 @@ export default class GameObject {
   target: GameObject | null = null;
   inCombat: boolean = false;
   hitPoints: number = 0;
-  team: string | null = null;
+  team: string = "";
 
   reset() {
     this.position = new Vector(0, 0);
@@ -17,7 +17,7 @@ export default class GameObject {
     this.target = null;
     this.inCombat = false;
     this.hitPoints = 0;
-    this.team = null;
+    this.team = "";
   }
 
   draw(ctx: CanvasRenderingContext2D | null) {
