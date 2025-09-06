@@ -1,18 +1,18 @@
 {
   "arena-width": 1500,
   "arena-height": 2000,
-  "fps": 60,
+  "tick-rate": 30,
   "time-between-waves": 20000,
   "time-between-minions": 1000,
   "minions-per-wave": 3,
   "minion-hp": 100,
   "minion-attack-cooldown": 2000,
-  "minion-speed": 2,
+  "minion-speed": 3,
   "minion-radius": 25,
-  "minion-look-ahead-max": 50,
+  "minion-look-ahead-max": 25,
   "tower-radius": 50,
   "fortress-hitpoints": 500,
   "steering-force": 0.1,
-  "avoidance-force": 0.3,
+  "avoidance-force": 0.2,
   "client-update-interval": 100
 }

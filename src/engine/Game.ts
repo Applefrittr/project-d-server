@@ -24,7 +24,7 @@ export default class Game {
 
   // Server specific properties
   id: number = 0;
-  tickRate: number = settings["fps"];
+  tickRate: number = settings["tick-rate"];
   tickInterval: number = 1000 / this.tickRate;
   tickFrame: NodeJS.Timeout | undefined = undefined;
   currFame: number = 0;
@@ -137,21 +137,16 @@ export default class Game {
       this.currFame++;
 
       // Broadcast state to clients
-      if (
-        currTime - this.prevEmittedFrame >
-        settings["client-update-interval"]
-      ) {
-        const state = {
-          id: this.id,
-          blueTeam: this.blueTeam,
-          redTeam: this.redTeam,
-          gameTime,
-          frame: this.currFame,
-        };
+      const state = {
+        id: this.id,
+        blueTeam: this.blueTeam,
+        redTeam: this.redTeam,
+        gameTime,
+        frame: this.currFame,
+      };
 
-        formatAndBroadcastGameState(state);
-        this.prevEmittedFrame = currTime;
-      }
+      formatAndBroadcastGameState(state);
+      this.prevEmittedFrame = currTime;
     }, this.tickInterval);
   };
 }
