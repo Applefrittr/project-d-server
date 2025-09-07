@@ -7,6 +7,7 @@ import Vector from "./Vector";
 import getDistanceBetweenVectors from "../utils/getDistanceBetweenVectors";
 import vectorIntersectsObject from "../utils/vectorIntersectsObject";
 import { TeamObject } from "../Game";
+import Fortress from "./Fortress";
 
 export default class Minion extends GameObject {
   argoRange = 500;
@@ -32,20 +33,27 @@ export default class Minion extends GameObject {
     }
   }
 
-  // iterates through the Set of opposing team GameObjects to detect potential targets and assigns the closest one to the Minion as the target
+  // iterates through the GameObjects to detect potential targets and assigns the closest one to the Minion as the target
   // skips if Minion is inCombat
-  detectTarget(oppTeam: TeamObject) {
+  detectTarget(gameObjects: GameObject[]) {
     if (this.inCombat) return;
-    let currTarget: GameObject | null = null,
-      targetDistance: number | null = Infinity;
 
-    for (const minion of Object.values(oppTeam)) {
+    let currTarget: GameObject | null = null,
+      targetDistance: number | null = Infinity,
+      enemyFortress: Fortress | null = null;
+
+    for (const obj of gameObjects) {
+      // skip if Minion is detectTarget against itself or GameObject is the same team
+      if (this.id === obj.id || this.team === obj.team) continue;
+      // save obj pointer if it is enemy Fortress
+      if (obj instanceof Fortress) enemyFortress = obj;
+
       const currDistance = getDistanceBetweenVectors(
         this.position,
-        minion.position
+        obj.position
       );
       if (currDistance < this.argoRange && currDistance < targetDistance) {
-        currTarget = minion;
+        currTarget = obj;
         targetDistance = currDistance;
       }
     }
@@ -54,12 +62,12 @@ export default class Minion extends GameObject {
     if (currTarget) {
       this.target = currTarget;
     } else {
-      this.target = oppTeam["-1"];
+      this.target = enemyFortress;
     }
   }
 
   // Path adjustments to Minions target vector as it apporaches/collides with other objects on the same team
-  adjustPathingToTarget(team: TeamObject) {
+  adjustPathingToTarget(gameObjects: GameObject[]) {
     // return if Minion is currently in Combat -> we don't want to adjust a Minion's pathing if it is currently fighting an enemy
     if (this.inCombat) return;
 
@@ -68,9 +76,9 @@ export default class Minion extends GameObject {
 
     // loop through Set of team Game Objects
     // iterate over the team in REVERSE ORDER OF INSERTION to ensure new Team Objects dont push Minion into older team Objects
-    for (const obj of Array.from(Object.values(team)).reverse()) {
+    for (const obj of gameObjects) {
       // skip collision detection for the Minion against itself
-      if (this.id === obj.id) continue;
+      if (this.id === obj.id || this.team !== obj.team) continue;
 
       // calc distance between Minion and curr Game Object
       const dist = getDistanceBetweenVectors(this.position, obj.position);
@@ -132,14 +140,11 @@ export default class Minion extends GameObject {
         return;
       this.prevAttackTime = currMs;
       this.target.hitPoints -= 10;
+      if (this.target.hitPoints <= 0) {
+        this.inCombat = false;
+        this.target.reset();
+      }
     }
-  }
-
-  // reset Minion back to Game Minion pool once hitpoints reach zero
-  destroy(team: TeamObject) {
-    delete team[this.id];
-    super.reset();
-    return;
   }
 
   update() {

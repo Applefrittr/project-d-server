@@ -6,8 +6,8 @@ export default class GameObject {
   velocity: Vector = new Vector(0, 0);
   radius: number = 0;
   target: GameObject | null = null;
-  inCombat: boolean = false;
   hitPoints: number = 0;
+  inCombat: boolean = false;
   team: string = "";
 
   reset() {
@@ -15,13 +15,8 @@ export default class GameObject {
     this.velocity = new Vector(0, 0);
     this.radius = 0;
     this.target = null;
-    this.inCombat = false;
     this.hitPoints = 0;
     this.team = "";
-  }
-
-  draw(ctx: CanvasRenderingContext2D | null) {
-    // temporary super method draw()
-    if (ctx) return;
+    this.inCombat = false;
   }
 }

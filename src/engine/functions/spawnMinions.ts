@@ -2,19 +2,30 @@ import type Minion from "../classes/Minion";
 import settings from "../settings.json";
 import setVelocityVector from "../utils/setVelocityVector";
 import { TeamObject } from "../Game";
+import Fortress from "../classes/Fortress";
+import GameObject from "../classes/GameObject";
 
 export default function spawnMinions(
   pool: Minion[],
-  redTeam: TeamObject,
-  blueTeam: TeamObject
+  gameObjects: GameObject[]
 ) {
+  let redFortress = null;
+  let blueFortress = null;
+
+  for (const obj of gameObjects) {
+    if (obj instanceof Fortress) {
+      if (obj.team === "red") redFortress = obj;
+      else blueFortress = obj;
+    }
+  }
+
   for (let i = 0; i < pool.length; i++) {
     if (!pool[i].team) {
       pool[i].assignTeam("red");
       pool[i].radius = settings["minion-radius"];
       pool[i].hitPoints = settings["minion-hp"];
-      redTeam[pool[i].id] = pool[i];
-      pool[i].target = blueTeam["-1"];
+      gameObjects.push(pool[i]);
+      pool[i].target = blueFortress;
       setVelocityVector(pool[i]);
       break;
     }
@@ -25,8 +36,8 @@ export default function spawnMinions(
       pool[j].assignTeam("blue");
       pool[j].radius = settings["minion-radius"];
       pool[j].hitPoints = settings["minion-hp"];
-      blueTeam[pool[j].id] = pool[j];
-      pool[j].target = redTeam["-1"];
+      gameObjects.push(pool[j]);
+      pool[j].target = redFortress;
       setVelocityVector(pool[j]);
       break;
     }

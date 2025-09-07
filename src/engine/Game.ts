@@ -15,8 +15,7 @@ export default class Game {
   prevMinionSpawn: number = 0;
   minionsSpawnedCurrWave: number = 0;
   minionPool: Minion[] = [];
-  blueTeam: TeamObject = {};
-  redTeam: TeamObject = {};
+  gameObjects: GameObject[] = [];
   isPaused: boolean = false;
   isWaveSpawning: boolean = true;
   startTime: number = 0;
@@ -36,45 +35,34 @@ export default class Game {
 
   // intialize creates intial gamestate and creates object pools
   initialize() {
-    this.blueTeam["-1"] = new Fortress("blue");
-    this.redTeam["-1"] = new Fortress("red");
+    this.gameObjects.push(new Fortress("blue"));
+    this.gameObjects.push(new Fortress("red"));
     this.minionPool = initializeMinionPool(this.minionPool, 100);
   }
 
-  // render function loops through all game assets (class instances) and calls their respective update()
-
-  // REWORK THIS to interate through team Sets instead of Minion pool
-  // will have to add type property to GameObject class (ex: Minon, Tower, Fortress, etc)
+  // update function loops through all game assets (class instances) and calls their respective update()
   update(currMs: number) {
-    this.minionPool.forEach((minion) => {
-      if (minion.team === null) return;
-      if (minion.inCombat) {
-        minion.attack(currMs);
-      }
-      if (minion.team === "blue") {
-        if (minion.hitPoints <= 0) {
-          minion.destroy(this.blueTeam);
-          return;
+    // filter out dead then update
+    this.gameObjects = this.gameObjects.filter((obj) => obj.hitPoints > 0);
+
+    for (const obj of this.gameObjects) {
+      if (obj instanceof Minion) {
+        if (obj.inCombat) {
+          obj.attack(currMs);
         }
-        minion.adjustPathingToTarget(this.blueTeam);
-        minion.detectTarget(this.redTeam);
-      } else {
-        if (minion.hitPoints <= 0) {
-          minion.destroy(this.redTeam);
-          return;
-        }
-        minion.adjustPathingToTarget(this.redTeam);
-        minion.detectTarget(this.blueTeam);
-      }
-      minion.update();
-    });
+        obj.adjustPathingToTarget(this.gameObjects);
+        obj.detectTarget(this.gameObjects);
+        obj.update();
+      } else if (obj instanceof Fortress) {
+        continue;
+      } else continue;
+    }
   }
 
   close() {
     clearInterval(this.tickFrame);
     this.minionPool = [];
-    this.redTeam = {};
-    this.blueTeam = {};
+    this.gameObjects = [];
     this.startTime = 0;
     this.pausedTime = 0;
     this.currFame = 0;
@@ -92,8 +80,6 @@ export default class Game {
       this.isPaused = false;
     }
     console.log("minons: ", this.minionPool);
-    console.log("blue team: ", this.blueTeam);
-    console.log("red team: ", this.redTeam);
   }
 
   // main game loop -> loop is executed via requestAnimationFrame, checks game state, keeps track of game time, checks for win/lose conditions and calls render function
@@ -123,7 +109,7 @@ export default class Game {
         this.minionPool &&
         gameTime - this.prevMinionSpawn >= settings["time-between-minions"]
       ) {
-        spawnMinions(this.minionPool, this.redTeam, this.blueTeam);
+        spawnMinions(this.minionPool, this.gameObjects);
         this.prevMinionSpawn = gameTime;
         this.minionsSpawnedCurrWave++;
         // checks to see if amount of minions spawned during current wave exceeds max per wave, if so, end wave spawning cycle
@@ -139,8 +125,7 @@ export default class Game {
       // Broadcast state to clients
       const state = {
         id: this.id,
-        blueTeam: this.blueTeam,
-        redTeam: this.redTeam,
+        gameObjects: this.gameObjects,
         gameTime,
         frame: this.currFame,
       };

@@ -1,11 +1,11 @@
 import { io } from "..";
+import GameObject from "../engine/classes/GameObject";
 import Vector from "../engine/classes/Vector";
 import { TeamObject } from "../engine/Game";
 
 type GameState = {
   id: number;
-  blueTeam: TeamObject;
-  redTeam: TeamObject;
+  gameObjects: GameObject[];
   gameTime: number;
   frame: number;
 };
@@ -22,8 +22,8 @@ type GameObjectData = {
 export function formatAndBroadcastGameState(state: GameState) {
   const gameObjects: GameObjectData[] = [];
 
-  for (const obj of Object.values(state.blueTeam)) {
-    const blueObj: GameObjectData = {
+  for (const obj of state.gameObjects) {
+    const newObj: GameObjectData = {
       id: obj.id,
       position: obj.position,
       velocity: obj.velocity,
@@ -31,19 +31,9 @@ export function formatAndBroadcastGameState(state: GameState) {
       radius: obj.radius,
       team: obj.team,
     };
-    gameObjects.push(blueObj);
+    gameObjects.push(newObj);
   }
-  for (const obj of Object.values(state.redTeam)) {
-    const redObj: GameObjectData = {
-      id: obj.id,
-      position: obj.position,
-      velocity: obj.velocity,
-      hitPoints: obj.hitPoints,
-      radius: obj.radius,
-      team: obj.team,
-    };
-    gameObjects.push(redObj);
-  }
+
   io.volatile.emit("update", {
     id: state.id,
     gameTime: state.gameTime,
