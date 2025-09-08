@@ -86,7 +86,7 @@ export default class Game {
   loop = (start: number) => {
     this.tickFrame = setInterval(() => {
       // set intial start time of game loop
-      if (!this.startTime) this.startTime = start;
+      if (!this.startTime) this.startTime = start + this.tickInterval;
 
       const currTime = performance.now();
 
@@ -123,6 +123,11 @@ export default class Game {
       this.currFame++;
 
       // Broadcast state to clients
+
+      // TETSING NETWORK STABILITY
+      const unstable = Math.random();
+      if (unstable < 0.9) return;
+
       const state = {
         id: this.id,
         gameObjects: this.gameObjects,
