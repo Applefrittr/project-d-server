@@ -122,12 +122,12 @@ export default class Game {
       this.update(gameTime);
       this.currFame++;
 
-      // Broadcast state to clients
-
-      // TETSING NETWORK STABILITY
+      // TETSING NETWORK STABILITY //
       const unstable = Math.random();
       if (unstable < 0.9) return;
+      // TESTING NETWORK STABILITY DONE //
 
+      // Broadcast state to clients
       const state = {
         id: this.id,
         gameObjects: this.gameObjects,
