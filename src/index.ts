@@ -23,8 +23,14 @@ io.on("connection", (socket) => {
   console.log("user is connected");
 
   // Launch Game
-  console.log("launching Game...");
-  game = intializeGame();
+  //game = intializeGame();
+
+  socket.on("sv_start", () => {
+    console.log("launching Game...");
+    game = intializeGame();
+    console.log("Sending client start message...");
+    io.emit("cl_start");
+  });
 
   socket.on("disconnect", () => {
     console.log("user disconnected");

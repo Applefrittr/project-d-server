@@ -121,10 +121,28 @@ export default class Game {
 
       this.update(gameTime);
       this.currFame++;
+      console.log(gameTime);
 
       // TETSING NETWORK STABILITY //
-      const unstable = Math.random();
-      if (unstable < 0.9) return;
+      // Dropped Packet
+      // const unstable = Math.random();
+      // if (unstable < 0.5) return;
+
+      // Network Jitter
+      const jitter = 10 + Math.random() * 300;
+
+      setTimeout(() => {
+        const state = {
+          id: this.id,
+          gameObjects: this.gameObjects,
+          gameTime,
+          frame: this.currFame,
+        };
+
+        formatAndBroadcastGameState(state);
+        this.prevEmittedFrame = currTime;
+      }, jitter);
+      return;
       // TESTING NETWORK STABILITY DONE //
 
       // Broadcast state to clients
