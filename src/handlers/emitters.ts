@@ -31,8 +31,8 @@ export function formatAndBroadcastGameState(state: GameState) {
   for (const obj of state.gameObjects) {
     const newObj: GameObjectData = {
       id: obj.id,
-      position: obj.position,
-      velocity: obj.velocity,
+      position: new Vector(obj.position.x, obj.position.y),
+      velocity: new Vector(obj.position.x, obj.position.y),
       hitPoints: obj.hitPoints,
       radius: obj.radius,
       team: obj.team,
@@ -45,9 +45,22 @@ export function formatAndBroadcastGameState(state: GameState) {
     }
   }
 
+  // Testing Jitter!!!! //
+  // const jitter = 10 + Math.random() * 200;
+  // setTimeout(() => {
+  //   io.volatile.emit("update", {
+  //     id: state.id,
+  //     serverTime: state.gameTime,
+  //     frame: state.frame,
+  //     objMap,
+  //   });
+  // }, jitter);
+  // return
+  // Jitter Test end //
+
   io.volatile.emit("update", {
     id: state.id,
-    gameTime: state.gameTime,
+    serverTime: state.gameTime,
     frame: state.frame,
     objMap,
   });

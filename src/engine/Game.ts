@@ -42,9 +42,6 @@ export default class Game {
 
   // update function loops through all game assets (class instances) and calls their respective update()
   update(currMs: number) {
-    // filter out dead then update
-    this.gameObjects = this.gameObjects.filter((obj) => obj.hitPoints > 0);
-
     for (const obj of this.gameObjects) {
       if (obj instanceof Minion) {
         if (obj.inCombat) {
@@ -57,6 +54,8 @@ export default class Game {
         continue;
       } else continue;
     }
+    // filter out dead
+    this.gameObjects = this.gameObjects.filter((obj) => obj.hitPoints > 0);
   }
 
   close() {
@@ -128,24 +127,24 @@ export default class Game {
       // const unstable = Math.random();
       // if (unstable < 0.5) return;
 
-      // Network Jitter
-      const jitter = 10 + Math.random() * 300;
+      //Network Jitter
+      // const jitter = 10 + Math.random() * 500;
 
-      setTimeout(() => {
-        const state = {
-          id: this.id,
-          gameObjects: this.gameObjects,
-          gameTime,
-          frame: this.currFame,
-        };
+      // const state = {
+      //   id: this.id,
+      //   gameObjects: structuredClone(this.gameObjects),
+      //   gameTime,
+      //   frame: this.currFame,
+      // };
 
-        formatAndBroadcastGameState(state);
-        this.prevEmittedFrame = currTime;
-      }, jitter);
-      return;
+      // setTimeout(() => {
+      //   formatAndBroadcastGameState(state);
+      //   this.prevEmittedFrame = currTime;
+      // }, jitter);
+      // return;
       // TESTING NETWORK STABILITY DONE //
 
-      // Broadcast state to clients
+      //Broadcast state to clients
       const state = {
         id: this.id,
         gameObjects: this.gameObjects,
