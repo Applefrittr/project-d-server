@@ -27,7 +27,8 @@ export default class Game {
   tickInterval: number = 1000 / this.tickRate;
   tickFrame: NodeJS.Timeout | undefined = undefined;
   currFame: number = 0;
-  prevEmittedFrame: number = 0;
+  prevBroadcastTime: number = 0;
+  broadCastInterval: number = 1000 / (this.tickRate / 3);
 
   constructor(id: number) {
     this.id = id;
@@ -38,6 +39,12 @@ export default class Game {
     this.gameObjects.push(new Fortress("blue"));
     this.gameObjects.push(new Fortress("red"));
     this.minionPool = initializeMinionPool(this.minionPool, 100);
+    console.log(
+      "tickInterval: ",
+      this.tickInterval,
+      "broadCast Interval: ",
+      this.broadCastInterval
+    );
   }
 
   // update function loops through all game assets (class instances) and calls their respective update()
@@ -65,7 +72,7 @@ export default class Game {
     this.startTime = 0;
     this.pausedTime = 0;
     this.currFame = 0;
-    this.prevEmittedFrame = 0;
+    this.prevBroadcastTime = 0;
   }
 
   pause() {
@@ -126,34 +133,20 @@ export default class Game {
       // Dropped Packet
       // const unstable = Math.random();
       // if (unstable < 0.5) return;
-
-      //Network Jitter
-      // const jitter = 10 + Math.random() * 500;
-
-      // const state = {
-      //   id: this.id,
-      //   gameObjects: structuredClone(this.gameObjects),
-      //   gameTime,
-      //   frame: this.currFame,
-      // };
-
-      // setTimeout(() => {
-      //   formatAndBroadcastGameState(state);
-      //   this.prevEmittedFrame = currTime;
-      // }, jitter);
-      // return;
       // TESTING NETWORK STABILITY DONE //
 
-      //Broadcast state to clients
-      const state = {
-        id: this.id,
-        gameObjects: this.gameObjects,
-        gameTime,
-        frame: this.currFame,
-      };
+      // Broadcast state to clients at a the broadcast interval rate
+      if (gameTime - this.prevBroadcastTime > this.broadCastInterval) {
+        const state = {
+          id: this.id,
+          gameObjects: this.gameObjects,
+          gameTime,
+          frame: this.currFame,
+        };
 
-      formatAndBroadcastGameState(state);
-      this.prevEmittedFrame = currTime;
+        formatAndBroadcastGameState(state);
+        this.prevBroadcastTime = gameTime;
+      }
     }, this.tickInterval);
   };
 }
