@@ -1,12 +1,18 @@
 import app from "./app";
 import http from "http";
 import { Server } from "socket.io";
+import intializeGame from "./engine/functions/intializeGame";
+import Game from "./engine/Game";
 const debug = require("debug")("project-d-server:server");
 
 const server = http.createServer(app);
 
+// temp game variable
+
+let game: Game | null = null;
+
 // mount socket.io to http server
-const io = new Server(server, {
+export const io = new Server(server, {
   cors: {
     origin: process.env.CLIENT_URL || "http://localhost:5173",
   },
@@ -17,9 +23,19 @@ io.on("connection", (socket) => {
   console.log("user is connected");
 
   // Launch Game
+  //game = intializeGame();
+
+  socket.on("sv_start", () => {
+    console.log("launching Game...");
+    game = intializeGame();
+    console.log("Sending client start message...");
+    io.emit("cl_start");
+  });
 
   socket.on("disconnect", () => {
     console.log("user disconnected");
+    game?.close();
+    game = null;
   });
 });
 
