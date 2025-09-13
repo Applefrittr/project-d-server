@@ -1,9 +1,8 @@
-import { io } from "..";
-import Fortress from "../engine/classes/Fortress";
-import GameObject from "../engine/classes/GameObject";
-import Minion from "../engine/classes/Minion";
-import Vector from "../engine/classes/Vector";
-import { TeamObject } from "../engine/Game";
+import { io } from "../server";
+import Fortress from "../../engine/classes/Fortress";
+import GameObject from "../../engine/classes/GameObject";
+import Minion from "../../engine/classes/Minion";
+import Vector from "../../engine/classes/Vector";
 
 type GameState = {
   id: number;
@@ -58,10 +57,14 @@ export function formatAndBroadcastGameState(state: GameState) {
   // return
   // Jitter Test end //
 
-  io.volatile.emit("update", {
+  io.to(`${state.id}`).volatile.emit("update", {
     id: state.id,
     serverTime: state.gameTime,
     frame: state.frame,
     objMap,
   });
+}
+
+export function sendStartSignal() {
+  io.emit("cl_start");
 }

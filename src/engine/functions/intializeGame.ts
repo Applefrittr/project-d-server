@@ -1,7 +1,7 @@
 import Game from "../Game";
 
-export default function intializeGame() {
-  const game = new Game(Math.floor(Math.random() * 100000));
+export default function intializeGame(id: number) {
+  const game = new Game(id);
   game.initialize();
 
   game.loop(performance.now());

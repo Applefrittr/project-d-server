@@ -4,7 +4,7 @@ import settings from "./settings.json";
 import Fortress from "./classes/Fortress";
 import GameObject from "./classes/GameObject";
 import spawnMinions from "./functions/spawnMinions";
-import { formatAndBroadcastGameState } from "../handlers/emitters";
+import { formatAndBroadcastGameState } from "../sockets/handlers/emitters";
 
 export type TeamObject = {
   [id: number]: GameObject;
@@ -127,7 +127,7 @@ export default class Game {
 
       this.update(gameTime);
       this.currFame++;
-      console.log(gameTime);
+      //console.log(gameTime);
 
       // TETSING NETWORK STABILITY //
       // Dropped Packet
