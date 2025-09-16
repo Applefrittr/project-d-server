@@ -4,7 +4,12 @@ import settings from "./settings.json";
 import Fortress from "./classes/Fortress";
 import GameObject from "./classes/GameObject";
 import spawnMinions from "./functions/spawnMinions";
-import { formatAndBroadcastGameState } from "../sockets/handlers/emitters";
+import { broadCastState } from "../sockets/handlers/emitters";
+import { isMainThread, parentPort } from "worker_threads";
+import {
+  formatStateforClient,
+  GameState,
+} from "./functions/formatStateforClient";
 
 export type TeamObject = {
   [id: number]: GameObject;
@@ -91,6 +96,7 @@ export default class Game {
   // main game loop -> loop is executed via requestAnimationFrame, checks game state, keeps track of game time, checks for win/lose conditions and calls render function
   loop = (start: number) => {
     this.tickFrame = setInterval(() => {
+      // const tick = performance.now();
       // set intial start time of game loop
       if (!this.startTime) this.startTime = start + this.tickInterval;
 
@@ -137,16 +143,25 @@ export default class Game {
 
       // Broadcast state to clients at a the broadcast interval rate
       if (gameTime - this.prevBroadcastTime > this.broadCastInterval) {
-        const state = {
+        const state: GameState = {
           id: this.id,
           gameObjects: this.gameObjects,
           gameTime,
           frame: this.currFame,
         };
 
-        formatAndBroadcastGameState(state);
+        const cl_state = formatStateforClient(state);
+
+        if (isMainThread) {
+          broadCastState(cl_state);
+        } else {
+          parentPort?.postMessage({ state: cl_state });
+        }
         this.prevBroadcastTime = gameTime;
       }
+
+      // const tock = performance.now();
+      // console.log("loop time: ", tock - tick);
     }, this.tickInterval);
   };
 }

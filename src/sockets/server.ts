@@ -14,6 +14,9 @@ export function mountSockets(server: http.Server) {
   io.on("connection", (socket) => {
     console.log("user is connected");
 
+    // Logic to determine available worker thread and assign socket
+    // set thread ID in socket.data
+
     attachListeners(socket);
   });
 }
