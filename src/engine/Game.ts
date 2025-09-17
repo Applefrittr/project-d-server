@@ -10,6 +10,7 @@ import {
   formatStateforClient,
   GameState,
 } from "./functions/formatStateforClient";
+import { workerForwardState } from "../workers/worker";
 
 export type TeamObject = {
   [id: number]: GameObject;
@@ -152,10 +153,17 @@ export default class Game {
 
         const cl_state = formatStateforClient(state);
 
+        // Determine if game is running in main thread or worker thread and send stat accordingly
         if (isMainThread) {
           broadCastState(cl_state);
         } else {
-          parentPort?.postMessage({ state: cl_state });
+          // const msg: WorkerOutgoingMessage = {
+          //   flag: "game_update",
+          //   data: cl_state,
+          //   gameID: this.id,
+          // };
+          // parentPort?.postMessage(msg);
+          workerForwardState(cl_state);
         }
         this.prevBroadcastTime = gameTime;
       }
