@@ -157,12 +157,6 @@ export default class Game {
         if (isMainThread) {
           broadCastState(cl_state);
         } else {
-          // const msg: WorkerOutgoingMessage = {
-          //   flag: "game_update",
-          //   data: cl_state,
-          //   gameID: this.id,
-          // };
-          // parentPort?.postMessage(msg);
           workerForwardState(cl_state);
         }
         this.prevBroadcastTime = gameTime;

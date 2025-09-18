@@ -13,16 +13,27 @@ export function intializeWorkers() {
       workerData: { workerID: i },
     });
 
-    // attach listeners to the main thread from that specific worker
+    // attach listeners on the main thread from that specific worker
     worker.on("message", (msg: WorkerOutgoingMessage) => {
-      if (msg.flag === "game_start")
-        console.log(`Game ID ${msg.gameID} started on worker ${msg.workerID}`);
-      else if (msg.flag === "game_update" && msg.state) {
-        broadCastState(msg.state);
-      } else if (msg.flag === "game_end")
-        console.log(
-          `Game ID ${msg.gameID} closed on worker ${msg.workerID} - users disconnected!`
-        );
+      switch (msg.flag) {
+        case "game_start":
+          console.log(
+            `Game ID ${msg.gameID} started on worker ${msg.workerID}`
+          );
+          break;
+        case "game_update":
+          if (msg.state) broadCastState(msg.state);
+          break;
+        case "game_end":
+          console.log(
+            `Game ID ${msg.gameID} closed on worker ${msg.workerID} - users disconnected!`
+          );
+          break;
+        default:
+          console.log(
+            `Unhandled message - '${msg.flag}' - from worker ${msg.workerID}`
+          );
+      }
     });
     workers.push(worker);
   }

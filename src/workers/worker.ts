@@ -24,18 +24,23 @@ const workerID = workerData.workerID;
 // the message.flag value => message = {flag: "do something", data: 0}
 // Attach listeners to this worker from the main parent thread
 parentPort?.on("message", (msg: WorkerIncomingMessage) => {
-  if (msg.flag === "game_start") {
-    const game = intializeGame(msg.gameID);
-    currentGames[msg.gameID] = game;
+  switch (msg.flag) {
+    case "game_start":
+      const game = intializeGame(msg.gameID);
+      currentGames[msg.gameID] = game;
 
-    sendMessageToParent("game_start", msg.gameID);
-  } else if (msg.flag === "game_end" && msg.gameID) {
-    currentGames[msg.gameID].close();
-    delete currentGames[msg.gameID];
+      sendMessageToParent("game_start", msg.gameID);
+      break;
+    case "game_end":
+      currentGames[msg.gameID].close();
+      delete currentGames[msg.gameID];
 
-    sendMessageToParent("game_end", msg.gameID);
-  } else if (msg.flag === "game_count") {
-    parentPort?.postMessage(Object.values(currentGames).length);
+      sendMessageToParent("game_end", msg.gameID);
+      break;
+    default:
+      console.log(
+        `Unhandled message - '${msg.flag}' - from worker main thread`
+      );
   }
 });
 
