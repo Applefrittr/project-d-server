@@ -1,14 +1,19 @@
-import { io } from "..";
-import Fortress from "../engine/classes/Fortress";
-import GameObject from "../engine/classes/GameObject";
-import Minion from "../engine/classes/Minion";
-import Vector from "../engine/classes/Vector";
-import { TeamObject } from "../engine/Game";
+import Fortress from "../classes/Fortress";
+import GameObject from "../classes/GameObject";
+import Minion from "../classes/Minion";
+import Vector from "../classes/Vector";
 
-type GameState = {
+export type GameState = {
   id: number;
   gameObjects: GameObject[];
   gameTime: number;
+  frame: number;
+};
+
+export type FormattedClientState = {
+  id: number;
+  objMap: GameObjectMap;
+  serverTime: number;
   frame: number;
 };
 
@@ -25,7 +30,7 @@ type GameObjectMap = {
   [id: string]: GameObjectData;
 };
 
-export function formatAndBroadcastGameState(state: GameState) {
+export function formatStateforClient(state: GameState): FormattedClientState {
   const objMap: GameObjectMap = {};
 
   for (const obj of state.gameObjects) {
@@ -45,23 +50,10 @@ export function formatAndBroadcastGameState(state: GameState) {
     }
   }
 
-  // Testing Jitter!!!! //
-  // const jitter = 10 + Math.random() * 200;
-  // setTimeout(() => {
-  //   io.volatile.emit("update", {
-  //     id: state.id,
-  //     serverTime: state.gameTime,
-  //     frame: state.frame,
-  //     objMap,
-  //   });
-  // }, jitter);
-  // return
-  // Jitter Test end //
-
-  io.volatile.emit("update", {
+  return {
     id: state.id,
     serverTime: state.gameTime,
     frame: state.frame,
-    objMap,
-  });
+    objMap: objMap,
+  };
 }
