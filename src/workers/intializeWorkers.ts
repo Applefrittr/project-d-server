@@ -26,7 +26,7 @@ export function intializeWorkers() {
           break;
         case "game_end":
           console.log(
-            `Game ID ${msg.gameID} closed on worker ${msg.workerID} - users disconnected!`
+            `Game ID ${msg.gameID} closed on worker ${msg.workerID} - all users disconnected!`
           );
           break;
         default:
