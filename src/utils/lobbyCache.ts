@@ -3,6 +3,7 @@ export type Lobby = {
   name: string;
   playerCount: number;
   host: string;
+  sockets: string[];
 };
 
 export const lobbyCache: { [id: string]: Lobby } = {};

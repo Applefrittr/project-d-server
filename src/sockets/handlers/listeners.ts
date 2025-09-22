@@ -5,7 +5,6 @@ import {
 } from "./emitters";
 import { Socket, DefaultEventsMap } from "socket.io";
 import { workerLB } from "../../workers/WorkerLoadBalancer";
-import { io } from "../server";
 import { lobbyCache } from "../../utils/lobbyCache";
 
 export default function attachListeners(
@@ -13,18 +12,23 @@ export default function attachListeners(
 ) {
   socket.on("join_lobby", async (gameID: number) => {
     console.log("in socket listener: ", gameID, lobbyCache);
+    console.log("socket ID: ", socket.id);
     const lobby = lobbyCache[gameID];
     if (!lobby) {
       sendServerError("Lobby no longer exists!");
       return;
     }
+    if (lobby.sockets.indexOf(socket.id) > -1) {
+      console.log(`User ${socket.id} is already connected to room`);
+      return;
+    }
     if (lobby.playerCount < 3) {
       socket.join(`${gameID}`);
       socket.data.gameID = gameID;
-      // socket.data.user = abc123
       lobby.playerCount++;
+      lobby.sockets.push(socket.id);
       console.log(
-        `User connecting to lobby - ${gameID} - currently ${lobby.playerCount} users connected`
+        `User ${socket.id} connecting to lobby - ${gameID} - currently ${lobby.playerCount} users connected`
       );
     } else sendServerError("Game lobby is full!");
   });
@@ -42,7 +46,7 @@ export default function attachListeners(
     console.log(lobbyCache[gameID]);
     sendLobbyNotification("User disconnected!", gameID);
     lobbyCache[gameID].playerCount--;
-    console.log(`user disconnected from lobby - ${gameID}`);
+    console.log(`User ${socket.id} disconnected from lobby - ${gameID}`);
     console.log(`updated cache: `, lobbyCache);
     if (lobbyCache[gameID].playerCount === 0) {
       console.log(`lobby ${gameID} closed!`);
