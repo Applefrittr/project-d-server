@@ -2,7 +2,7 @@ export type Lobby = {
   gameID: number;
   name: string;
   playerCount: number;
-  host: string;
+  players: string[];
   sockets: string[];
 };
 
