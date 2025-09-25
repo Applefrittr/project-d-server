@@ -1,5 +1,6 @@
 import { io } from "../server";
 import { FormattedClientState } from "../../engine/functions/formatStateforClient";
+import { Lobby } from "../../utils/lobbyCache";
 
 export function broadCastState(state: FormattedClientState) {
   io.to(`${state.id}`).volatile.emit("update_game", state);
@@ -15,4 +16,8 @@ export function sendServerError(msg: string) {
 
 export function sendLobbyNotification(msg: string, id: number) {
   io.to(`${id}`).emit("lby_notification", msg);
+}
+
+export function sendLobbyUpdate(lobbyData: Lobby | null, id: number) {
+  io.to(`${id}`).emit("lby_update", lobbyData);
 }
