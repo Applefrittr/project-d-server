@@ -2,7 +2,7 @@ import { io } from "../server";
 import { FormattedClientState } from "../../engine/functions/formatStateforClient";
 
 export function broadCastState(state: FormattedClientState) {
-  io.to(`${state.id}`).volatile.emit("update", state);
+  io.to(`${state.id}`).volatile.emit("update_game", state);
 }
 
 export function sendStartSignal() {
