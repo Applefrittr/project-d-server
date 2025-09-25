@@ -1,8 +1,10 @@
 import { Worker } from "worker_threads";
 import { WorkerIncomingMessage } from "./worker";
 
+type GameIDs = number[];
+
 class WorkerLoadBalancer {
-  workers: Map<Worker, number[]> = new Map();
+  workers: Map<Worker, GameIDs> = new Map();
   currPointer = 0;
 
   loadWorkers(workerArray: Worker[]) {
