@@ -11,7 +11,7 @@ import { lobbyCache } from "../../utils/lobbyCache";
 export default function attachListeners(
   socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
 ) {
-  socket.on("lby_join", (gameID: number, user: string) => {
+  socket.on("lby_join", (gameID: number, username: string) => {
     console.log("in socket listener: ", gameID, lobbyCache);
     console.log("socket ID: ", socket.id);
     const lobby = lobbyCache[gameID];
@@ -26,10 +26,10 @@ export default function attachListeners(
     if (lobby.playerCount < 2) {
       socket.join(`${gameID}`);
       socket.data.gameID = gameID;
-      socket.data.user = user;
+      socket.data.username = username;
       lobby.playerCount++;
       lobby.sockets.push(socket.id);
-      lobby.players.push(user);
+      lobby.players.push({ username, ready: false });
       console.log(
         `User ${socket.id} connecting to lobby - ${gameID} - currently ${lobby.playerCount} users connected`
       );
@@ -47,11 +47,11 @@ export default function attachListeners(
 
   socket.on("disconnect", () => {
     const gameID = socket.data.gameID;
-    const user = socket.data.user;
+    const username = socket.data.username;
 
     if (!lobbyCache[gameID]) return;
 
-    if (lobbyCache[gameID].host === user) {
+    if (lobbyCache[gameID].host === username) {
       console.log(`lobby ${gameID} closed!`);
       workerLB.closeGame(gameID);
       delete lobbyCache[gameID];
@@ -62,7 +62,7 @@ export default function attachListeners(
     sendLobbyNotification("User disconnected!", gameID);
     lobbyCache[gameID].playerCount--;
     lobbyCache[gameID].players = lobbyCache[gameID].players.filter(
-      (currUser) => currUser !== user
+      (currUser) => currUser.username !== username
     );
     lobbyCache[gameID].sockets = lobbyCache[gameID].sockets.filter(
       (currSocket) => currSocket !== socket.id
