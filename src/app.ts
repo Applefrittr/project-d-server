@@ -27,7 +27,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 // error handler
 app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
   res.status(err.status || 500);
-  res.send(err.message);
+  res.json(err.message);
 });
 
 export default app;

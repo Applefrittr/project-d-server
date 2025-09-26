@@ -23,7 +23,7 @@ export default function attachListeners(
       console.log(`User ${socket.id} is already connected to room`);
       return;
     }
-    if (lobby.playerCount < 3) {
+    if (lobby.playerCount < 2) {
       socket.join(`${gameID}`);
       socket.data.gameID = gameID;
       socket.data.user = user;
