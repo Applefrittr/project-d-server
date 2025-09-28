@@ -5,6 +5,7 @@ export type Lobby = {
   players: { username: string; ready: boolean }[];
   sockets: string[];
   host: string;
+  gameRunning: boolean;
 };
 
 export const lobbyCache: { [id: string]: Lobby } = {};

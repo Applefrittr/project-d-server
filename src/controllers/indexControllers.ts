@@ -13,12 +13,14 @@ export const getLobbies = (req: Request, res: Response, next: NextFunction) => {
 export const getLobby = (req: Request, res: Response, next: NextFunction) => {
   try {
     const lobby = lobbyCache[req.params.id];
-    if (!lobby) throw createError(404, "Lobby no longer exists!!!");
-    if (lobby.playerCount >= 2) throw createError(403, "Lobby is full!!!");
+    if (!lobby) return next(createError(404, "Lobby no longer exists!!!"));
+    if (lobby.playerCount >= 2)
+      return next(createError(403, "Lobby is full!!!"));
+    if (lobby.gameRunning)
+      return next(createError(403, "Game has already started!!!"));
 
     res.json(lobby);
   } catch (err) {
-    if (err instanceof Error) next(err);
     next(createError(500, "Internal server error, try again"));
   }
 };

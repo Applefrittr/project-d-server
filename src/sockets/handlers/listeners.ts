@@ -37,8 +37,24 @@ export default function attachListeners(
     } else sendServerError("Game lobby is full!");
   });
 
+  socket.on("lby_ready", (gameID: number, username: string) => {
+    const lobby = lobbyCache[gameID];
+    if (!lobby) {
+      sendServerError("Lobby no longer exists!");
+      return;
+    }
+    for (const player of lobby.players) {
+      if (player.username === username) {
+        player.ready = !player.ready;
+        break;
+      }
+    }
+    sendLobbyUpdate(lobby, gameID);
+  });
+
   socket.on("sv_start", (gameID: number) => {
     console.log("Sending client start message...");
+    lobbyCache[gameID].gameRunning = true;
     sendStartSignal();
 
     // assign a new game instance to a worker through our Worker Load Balancer
