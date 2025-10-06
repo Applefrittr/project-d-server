@@ -1,6 +1,6 @@
 import { io } from "../server";
 import { FormattedClientState } from "../../engine/functions/formatStateforClient";
-import { Lobby } from "../../utils/lobbyCache";
+import { type Lobby } from "../../utils/types";
 
 export function broadCastState(state: FormattedClientState) {
   io.to(`${state.id}`).volatile.emit("update_game", state);
