@@ -67,7 +67,11 @@ export default function attachListeners(
 
     if (!lobbyCache[gameID]) return;
 
-    if (lobbyCache[gameID].host === username) {
+    if (
+      (lobbyCache[gameID].host === username &&
+        !lobbyCache[gameID].gameRunning) ||
+      lobbyCache[gameID].playerCount === 1
+    ) {
       console.log(`lobby ${gameID} closed!`);
       workerLB.closeGame(gameID);
       delete lobbyCache[gameID];
